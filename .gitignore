@@ -1,16 +1,11 @@
 autom4te*
 *.cache
-config.*
+config.h
 *.status
-depcomp
 libtool
-ltmain.sh
-missing
 stamp-h1
 *~
-Makefile.in
 Makefile
-mkinstalldirs
 .*.sw?
 .deps
 .libs
@@ -22,7 +17,5 @@ compile
 *.pyc
 *.so
 *.defs
-gtk-doc.make
-py-compile
 m4/l*.m4
 *.log
