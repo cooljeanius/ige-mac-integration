@@ -1,3 +1,5 @@
+ACLOCAL_AMFLAGS = -I m4
+
 SUBDIRS = src data bindings docs strings
 
 EXTRA_DIST = gtk-doc.make

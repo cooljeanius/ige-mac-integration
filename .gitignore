@@ -1,7 +1,7 @@
-aclocal.m4
 autom4te*
+*.cache
 config.*
-configure
+*.status
 depcomp
 install-sh
 libtool
@@ -25,4 +25,5 @@ compile
 *.defs
 gtk-doc.make
 py-compile
-m4/
+m4/l*.m4
+*.log

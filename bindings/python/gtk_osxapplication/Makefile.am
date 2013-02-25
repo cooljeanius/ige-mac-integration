@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/src $(PYTHON_INCLUDES)
+AM_CPPFLAGS = -I$(top_srcdir)/src $(PYTHON_INCLUDES)
 
 gtk_osxapplicationdir = $(libdir)/python$(PYTHON_VERSION)/site-packages/gtk_osxapplication
 
