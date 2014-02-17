@@ -57,6 +57,7 @@ STRING_FILES =  GtkOSXApplication.strings.ca    \
 		GtkOSXApplication.strings.zh_TW
 
 all: Makefile
+.PHONY: all
 
 install: ${STRING_FILES}
 	${mkdir_p} ${localedir}; \
@@ -67,9 +68,14 @@ install: ${STRING_FILES}
 	  ${mkdir_p} $$dest_dir; \
 	  ${install_sh} $$file $$dest_dir/$$dest_name; \
 	done
+.PHONY: install
 
 clean:
+.PHONY: clean
 
 distclean: 
-	rm Makefile
+	rm -f Makefile
+.PHONY: distclean
 
+check: all ${STRING_FILES}
+.PHONY: check

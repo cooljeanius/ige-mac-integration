@@ -713,6 +713,7 @@ main (int argc, char **argv)
 #ifdef GTKOSXAPPLICATION
   GtkOSXApplication *theApp;
 #endif /*GTKOSXAPPLICATION*/
+#define GTK_DISABLE_DEPRECATED 1
 #ifndef GTK_DISABLE_DEPRECATED
     g_thread_init(NULL); /* deprecated */
 #endif /* !GTK_DISABLE_DEPRECATED */

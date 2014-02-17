@@ -726,8 +726,22 @@ if test "`(uname) 2>/dev/null`" = Darwin; then
   if test "x${enable_darwin}" = "xyes"; then
     MACOSX=yes
     dnl# TODO: use -arch i386 on Intel machines
-    dnl# TODO: remove "-no-cpp-precomp" on Snow Leopard and newer
-    CPPFLAGS="${CPPFLAGS} -DMACOS_X_UNIX -no-cpp-precomp"
+    AC_CACHE_CHECK([whether to use the -no-cpp-precomp compiler flag],
+                   [ebg_cv_no_cpp_precomp],
+                   [AC_EGREP_CPP([use_no_cpp_precomp],[
+#ifdef __APPLE__
+# if defined(__GNUC__) && (__GNUC__ < 3)
+use_no_cpp_precomp
+# endif /* GCC 2 */
+#endif /* __APPLE__ */
+                                 ],[ebg_cv_no_cpp_precomp=yes],
+                                 [ebg_cv_no_cpp_precomp=no])
+                   if test "x${ebg_cv_no_cpp_precomp}" = "xyes"; then
+                     CPPFLAGS="${CPPFLAGS} -DMACOS_X_UNIX -no-cpp-precomp"
+                   else
+                     CPPFLAGS="${CPPFLAGS} -DMACOS_X_UNIX"
+                   fi
+                   ])
     AC_CHECK_HEADER([Carbon/Carbon.h],[CARBON=yes])
     AC_CHECK_HEADER([Cocoa/Cocoa.h],[COCOA=yes])
   fi

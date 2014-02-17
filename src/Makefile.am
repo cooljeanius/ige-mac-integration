@@ -1,6 +1,10 @@
-WARN_CFLAGS = -Wall -Wextra -pedantic -ansi -Wno-deprecated
+WARN_CFLAGS = -Wall -Wextra
+
+WARN_CXXFLAGS = $(WARN_CFLAGS) -Wno-deprecated
 
 AM_CFLAGS = $(WARN_CFLAGS)
+
+AM_CXXFLAGS = $(WARN_CXXFLAGS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(WARN_CFLAGS)
 
