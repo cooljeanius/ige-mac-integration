@@ -9,12 +9,17 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET dnl# also checks the "_BUILD" and "_HOST" versions
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
-AM_INIT_AUTOMAKE([gnits])
+AM_INIT_AUTOMAKE([1.11 gnits])
 AM_MAINTAINER_MODE
 AM_SANITY_CHECK
 AC_CONFIG_HEADERS([config.h])
 
+m4_ifdef([AM_PROG_AR],[
 AM_PROG_AR
+],[
+AC_CHECK_TOOLS([AR],[ar lib "link -lib"],[false])
+: ${AR=ar}
+])
 AC_DISABLE_STATIC([])
 LT_INIT([dlopen disable-static])
 AC_MSG_CHECKING([Bitness])
@@ -31,13 +36,20 @@ AC_PREPROC_IFELSE(
 AM_CONDITIONAL([SIXTY_FOUR_BIT],[test "x${sixty_four_bit}" = "xyes"])
 
 # Checks for programs.
+m4_ifdef([AM_PROG_CC_C_O],[
+AM_PROG_CC_C_O
+],[:])
 AC_PROG_CPP
 AC_PROG_CXX
 AC_PROG_OBJC
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_RANLIB
+m4_ifdef([AM_PROG_VALAC],[
 AM_PROG_VALAC
+],[
+AC_PATH_PROG([VALAC],[valac],[valac])
+])
 EBG_MACOSX_OPTIONS
 
 # Checks for libraries.

@@ -3,11 +3,11 @@
 
 : ${AUTOCONF=autoconf}
 : ${AUTOHEADER=autoheader}
-: ${AUTOMAKE=automake-1.10}
-: ${ACLOCAL=aclocal-1.10}
-: ${LIBTOOLIZE=libtoolize}
+: ${AUTOMAKE=automake-1.11}
+: ${ACLOCAL=aclocal-1.11}
+: ${LIBTOOLIZE=glibtoolize}
 : ${INTLTOOLIZE=intltoolize}
-: ${LIBTOOL=libtool}
+: ${LIBTOOL=glibtool}
 : ${GTKDOCIZE=gtkdocize}
 
 srcdir=`dirname $0`
@@ -30,7 +30,8 @@ DIE=0
 	DIE=1
 }
 
-(grep "^AC_PROG_INTLTOOL" ${srcdir}/${CONFIGURE} >/dev/null) && {
+(grep "^AC_PROG_INTLTOOL" ${srcdir}/${CONFIGURE} >/dev/null ||
+ grep "^IT_PROG_INTLTOOL" ${srcdir}/${CONFIGURE} >/dev/null) && {
   (${INTLTOOLIZE} --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "You must have \`intltoolize' installed to compile $PROJECT."
@@ -56,7 +57,9 @@ DIE=0
   DIE=1
 }
 
-(grep "^AM_PROG_LIBTOOL" ${CONFIGURE} >/dev/null) && {
+(grep "^AM_PROG_LIBTOOL" ${CONFIGURE} >/dev/null ||
+ grep "^AC_PROG_LIBTOOL" ${CONFIGURE} >/dev/null ||
+ grep "^LT_INIT" ${CONFIGURE} >/dev/null) && {
   (${LIBTOOL} --version) < /dev/null > /dev/null 2>&1 || {
     echo
     echo "**Error**: You must have \`libtool' installed to compile $PROJECT."
@@ -78,7 +81,7 @@ if grep "^AM_[A-Z0-9_]\{1,\}_GETTEXT" "${CONFIGURE}" >/dev/null; then
       GETTEXTIZE_URL="ftp://alpha.gnu.org/gnu/gettext-0.10.35.tar.gz"
     fi
 
-    $GETTEXTIZE --version < /dev/null > /dev/null 2>&1
+    ${GETTEXTIZE} --version < /dev/null > /dev/null 2>&1
     if test $? -ne 0; then
       echo
       echo "**Error**: You must have \`${GETTEXTIZE}' installed to compile ${PKG_NAME}."
@@ -125,27 +128,30 @@ ${ACLOCAL} ${ACLOCAL_FLAGS} || exit $?
 if grep "^AC_PROG_INTLTOOL" ${CONFIGURE} >/dev/null ||
     grep "^IT_PROG_INTLTOOL" ${CONFIGURE} >/dev/null; then
     echo "Running intltoolize..."
-    intltoolize --copy --force --automake
+    ${INTLTOOLIZE} --copy --force --automake || exit $?
 fi
 
-libtoolize --force || exit $?
+echo "Running ${LIBTOOLIZE} --copy --force..."
+${LIBTOOLIZE} --copy --force || exit $?
 
 if grep "^GTK_DOC_CHECK" ${CONFIGURE} > /dev/null; then
-    echo "Running ${GTKDOCIZE}..."
-    $GTKDOCIZE
+    echo "Running ${GTKDOCIZE} --copy..."
+    ${GTKDOCIZE} --copy || exit $?
 fi
 
-if grep "^AM_CONFIG_HEADER" ${CONFIGURE} >/dev/null; then
+if grep "^AM_CONFIG_HEADER" ${CONFIGURE} >/dev/null ||
+    grep "^AC_CONFIG_HEADER" ${CONFIGURE} >/dev/null; then
     echo "Running ${AUTOHEADER}..."
     ${AUTOHEADER} || exit $?
 fi
 
-echo "Running ${AUTOMAKE} --add-missing..."
-${AUTOMAKE} --add-missing || exit $?
+echo "Running ${AUTOMAKE} --add-missing --copy --force-missing..."
+${AUTOMAKE} --add-missing --copy --force-missing || exit $?
 
-${AUTOCONF} || exit $?
+echo "Running ${AUTOCONF} --force..."
+${AUTOCONF} --force || exit $?
 
-cd $ORIGDIR || exit $?
+cd ${ORIGDIR} || exit $?
 
 if test "x${NOCONFIGURE}" = "x"; then
   echo Running ${srcdir}/configure ${conf_flags} "$@" ...
