@@ -1,8 +1,9 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* GtkApplicationDelegate.c (should actually be ".m")
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,7 +30,7 @@
 {
   const gchar *utf8_path =  [file UTF8String];
   GtkOSXApplication *app = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-  guint sig = g_signal_lookup("NSApplicationOpenFile", 
+  guint sig = g_signal_lookup("NSApplicationOpenFile",
 			      GTK_TYPE_OSX_APPLICATION);
   gboolean result = FALSE;
   if (sig)
@@ -42,7 +43,7 @@
 - (NSApplicationTerminateReply) applicationShouldTerminate:(NSApplication *)sender
 {
   GtkOSXApplication *app = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-  guint sig = g_signal_lookup("NSApplicationBlockTermination", 
+  guint sig = g_signal_lookup("NSApplicationBlockTermination",
 			      GTK_TYPE_OSX_APPLICATION);
   gboolean result = FALSE;
   static gboolean inHandler = FALSE;
@@ -69,3 +70,5 @@ extern NSMenu* _gtk_osxapplication_dock_menu(GtkOSXApplication* app);
 }
 
 @end
+
+/* EOF */

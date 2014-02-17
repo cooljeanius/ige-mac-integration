@@ -2,7 +2,7 @@
  *
  * Copyright (C) 2007 Pioneer Research Center USA, Inc.
  * Copyright (C) 2007, 2008 Imendio AB
- * Copyright © 2009, 2010 John Ralls
+ * Copyright (C) 2009, 2010 John Ralls
  *
  * For further information, see:
  * http://sourceforge.net/apps/trac/gtk-osx/wiki/Integrate
@@ -167,7 +167,7 @@ carbon_menu_connect (GtkWidget *menu, MenuRef menuRef, gboolean toplevel) {
     CarbonMenu *carbon_menu = carbon_menu_get (menu);
     if (!carbon_menu) {
 	carbon_menu = carbon_menu_new ();
-	g_object_set_qdata_full (G_OBJECT (menu), carbon_menu_quark, 
+	g_object_set_qdata_full (G_OBJECT (menu), carbon_menu_quark,
 				 carbon_menu,
 				 (GDestroyNotify) carbon_menu_free);
     }
@@ -207,7 +207,7 @@ carbon_menu_item_new (void) {
 
 static void
 carbon_menu_item_free (CarbonMenuItem *menu_item) {
-    DeleteMenuItem(menu_item->menu, menu_item->index);  //Clean up the Carbon Menu
+    DeleteMenuItem(menu_item->menu, menu_item->index);/*Clean up the Carbon Menu*/
     if (menu_item->accel_closure)
 	g_closure_unref (menu_item->accel_closure);
     g_slice_free (CarbonMenuItem, menu_item);
@@ -334,11 +334,11 @@ carbon_menu_item_get_checked (GtkWidget *widget) {
  * carbon_menu_item_get on it.
  */
     if (widget != checkWidget) {
-	const gchar *clabel = get_menu_label_text(GTK_WIDGET(checkWidget), 
+	const gchar *clabel = get_menu_label_text(GTK_WIDGET(checkWidget),
 						  NULL);
 	const gchar *cname = gtk_widget_get_name(checkWidget);
 	if (DEBUG_CARBON)
-	    g_printerr("%s: Widget mismatch, expected %s %s got %s %s\n", 
+	    g_printerr("%s: Widget mismatch, expected %s %s got %s %s\n",
 		       G_STRFUNC, name, label, cname, clabel);
 	return NULL;
     }
@@ -365,13 +365,13 @@ carbon_menu_item_update_state (CarbonMenuItem *carbon_item, GtkWidget *widget) {
     err = ChangeMenuItemAttributes (carbon_item->menu, carbon_item->index,
 				    set_attrs, clear_attrs);
     if (!err && carbon_item->submenu)
-	err = ChangeMenuAttributes (carbon_item->submenu, 
+	err = ChangeMenuAttributes (carbon_item->submenu,
 				    set_attrs, clear_attrs);
     carbon_menu_warn(err, "Failed to update state");
 }
 
 static void
-carbon_menu_item_update_active (CarbonMenuItem *carbon_item, 
+carbon_menu_item_update_active (CarbonMenuItem *carbon_item,
 				GtkWidget *widget) {
     gboolean active;
     g_object_get (widget, "active", &active, NULL);
@@ -379,7 +379,7 @@ carbon_menu_item_update_active (CarbonMenuItem *carbon_item,
 }
 
 static void
-carbon_menu_item_update_submenu (CarbonMenuItem *carbon_item, 
+carbon_menu_item_update_submenu (CarbonMenuItem *carbon_item,
 				 GtkWidget *widget, bool debug) {
     GtkWidget *submenu;
     const gchar *label_text;
@@ -389,7 +389,7 @@ carbon_menu_item_update_submenu (CarbonMenuItem *carbon_item,
     label_text = get_menu_label_text (widget, NULL);
     submenu = gtk_menu_item_get_submenu (GTK_MENU_ITEM (widget));
     if (!submenu) {
-	err = SetMenuItemHierarchicalMenu (carbon_item->menu, 
+	err = SetMenuItemHierarchicalMenu (carbon_item->menu,
 					   carbon_item->index, NULL);
 	carbon_menu_warn_label(err, label_text, "Failed to clear submenu");
 	carbon_item->submenu = NULL;
@@ -408,7 +408,7 @@ carbon_menu_item_update_submenu (CarbonMenuItem *carbon_item,
     err = SetMenuItemHierarchicalMenu (carbon_item->menu, carbon_item->index,
 				       carbon_item->submenu);
     carbon_menu_err_return_label(err, label_text, "Failed to set menu");
-    sync_menu_shell (GTK_MENU_SHELL (submenu), carbon_item->submenu, 
+    sync_menu_shell (GTK_MENU_SHELL (submenu), carbon_item->submenu,
 		     FALSE, debug);
 }
 
@@ -420,9 +420,9 @@ carbon_menu_item_update_label (CarbonMenuItem *carbon_item, GtkWidget *widget) {
 
     label_text = get_menu_label_text (widget, NULL);
     if (label_text)
-	cfstr = CFStringCreateWithCString (NULL, label_text, 
+	cfstr = CFStringCreateWithCString (NULL, label_text,
 					   kCFStringEncodingUTF8);
-    err = SetMenuItemTextWithCFString (carbon_item->menu, carbon_item->index, 
+    err = SetMenuItemTextWithCFString (carbon_item->menu, carbon_item->index,
 				       cfstr);
     carbon_menu_warn(err, "Failed to set menu text");
     if (cfstr)
@@ -442,9 +442,9 @@ carbon_menu_item_update_accelerator (CarbonMenuItem *carbon_item,
     OSStatus err;
 
     const gchar *label_txt = get_menu_label_text (widget, &label);
-    if (!(GTK_IS_ACCEL_LABEL (label) 
+    if (!(GTK_IS_ACCEL_LABEL (label)
 	  && _gtk_accel_label_get_closure(GTK_ACCEL_LABEL (label)))) {
-// Clear the menu shortcut
+/*Clear the menu shortcut*/
 	err = SetMenuItemModifiers (carbon_item->menu, carbon_item->index,
 				    kMenuNoModifiers | kMenuNoCommandModifier);
 	carbon_menu_warn_label(err, label_txt, "Failed to set modifiers");
@@ -545,18 +545,18 @@ carbon_menu_item_notify (GObject *object, GParamSpec *pspec,
 	carbon_menu_item_update_active (carbon_item, GTK_WIDGET (object));
     }
     else if (!strcmp (pspec->name, "submenu")) {
-	carbon_menu_item_update_submenu (carbon_item, GTK_WIDGET (object), 
+	carbon_menu_item_update_submenu (carbon_item, GTK_WIDGET (object),
 DEBUG_SIGNAL);
     }
     else if (DEBUG)
-	g_printerr("%s: Invalid parameter specification %s\n", G_STRFUNC, 
+	g_printerr("%s: Invalid parameter specification %s\n", G_STRFUNC,
 		   pspec->name);
 }
 
 static void
 carbon_menu_item_notify_label (GObject *object, GParamSpec *pspec,
 			       gpointer data) {
-    CarbonMenuItem *carbon_item = 
+    CarbonMenuItem *carbon_item =
 	carbon_menu_item_get_checked (GTK_WIDGET (object));
     const gchar *label_text = get_menu_label_text(GTK_WIDGET(object), NULL);
 
@@ -569,7 +569,7 @@ carbon_menu_item_notify_label (GObject *object, GParamSpec *pspec,
 	carbon_menu_item_update_label (carbon_item, GTK_WIDGET (object));
     }
     else if (!strcmp (pspec->name, "accel-closure")) {
-	carbon_menu_item_update_accel_closure (carbon_item, 
+	carbon_menu_item_update_accel_closure (carbon_item,
 					       GTK_WIDGET (object));
     }
 }
@@ -577,7 +577,7 @@ carbon_menu_item_notify_label (GObject *object, GParamSpec *pspec,
 static CarbonMenuItem *
 carbon_menu_item_connect (GtkWidget *menu_item, GtkWidget *label,
 			  MenuRef menu, MenuItemIndex index) {
-    CarbonMenuItem *carbon_item = 
+    CarbonMenuItem *carbon_item =
 	carbon_menu_item_get_checked (menu_item);
 
     if (!carbon_item) {
@@ -621,7 +621,7 @@ carbon_menu_item_create (GtkWidget *menu_item, MenuRef carbon_menu,
 	attributes |= kMenuItemAttrHidden;
     err = InsertMenuItemTextWithCFString (carbon_menu, cfstr, index - 1,
 					  attributes, 0);
-    carbon_menu_err_return_label_val(err, label_text, 
+    carbon_menu_err_return_label_val(err, label_text,
 				     "Failed to insert menu item", NULL);
     err = SetMenuItemProperty (carbon_menu, index,
 			       IGE_QUARTZ_MENU_CREATOR,
@@ -633,14 +633,14 @@ carbon_menu_item_create (GtkWidget *menu_item, MenuRef carbon_menu,
     if (err) {
 	carbon_menu_warn_label(err, label_text,
 				   "Failed to set menu property");
-  	DeleteMenuItem(carbon_menu, index); //Clean up the extra menu item
+  	DeleteMenuItem(carbon_menu, index); /*Clean up the extra menu item*/
 	return NULL;
     }
     carbon_item = carbon_menu_item_connect (menu_item, label,
 					    carbon_menu,
 					    index);
-    if (!carbon_item) { //Got a bad carbon_item, bail out
-	DeleteMenuItem(carbon_menu, index); //Clean up the extra menu item
+    if (!carbon_item) { /*Got a bad carbon_item, bail out*/
+	DeleteMenuItem(carbon_menu, index); /*Clean up the extra menu item*/
 	return carbon_item;
     }
     return carbon_item;
@@ -656,7 +656,7 @@ activate_destroy_cb (gpointer user_data) {
     ActivateIdleData *data = user_data;
 
     if (data->widget)
-	g_object_remove_weak_pointer (G_OBJECT (data->widget), 
+	g_object_remove_weak_pointer (G_OBJECT (data->widget),
 				      (gpointer) &data->widget);
     g_free (data);
 }
@@ -722,7 +722,7 @@ menu_event_handler_func (EventHandlerCallRef  event_handler_call_ref,
 	 */
 	idleData = g_new0 (ActivateIdleData, 1);
 	idleData->widget= widget;
-	g_object_add_weak_pointer (G_OBJECT (widget), 
+	g_object_add_weak_pointer (G_OBJECT (widget),
 				   (gpointer) &idleData->widget);
 	g_idle_add_full (G_PRIORITY_HIGH, activate_idle_cb,
 			 idleData, activate_destroy_cb);
@@ -750,8 +750,8 @@ nsevent_handle_menu_key (NSEvent *nsevent) {
     if ([nsevent type] != NSKeyDown)
 	return FALSE;
     event_ref = [nsevent gdk_quartz_event_ref];
-    if (!IsMenuKeyEvent (NULL, event_ref, kMenuEventQueryOnly, 
-			&menu_ref, &index)) 
+    if (!IsMenuKeyEvent (NULL, event_ref, kMenuEventQueryOnly,
+			&menu_ref, &index))
 	return FALSE;
     err = GetMenuItemCommandID (menu_ref, index, &menu_command);
     carbon_menu_err_return_val(err, "Failed to get command id", FALSE);
@@ -764,7 +764,7 @@ nsevent_handle_menu_key (NSEvent *nsevent) {
     err = SetEventParameter (event_ref, kEventParamDirectObject, typeHICommand,
 			     sizeof (HICommand), &hi_command);
     if (err != noErr)
-	ReleaseEvent(event_ref); //We're about to bail, don't want to leak
+	ReleaseEvent(event_ref); /*We are about to bail, do NOT want to leak*/
      carbon_menu_err_return_val(err, "Failed to set event parm", FALSE);
     FlashMenuBar (GetMenuID (menu_ref));
     g_timeout_add (30, menu_flash_off_cb, NULL);
@@ -813,7 +813,7 @@ global_event_filter_func (gpointer  windowing_event, GdkEvent *event,
 	/* FIXME: We could do something to skip menu events if there is a
 	 * modal dialog...
 	 */
-	if (!focus 
+	if (!focus
 	    || !g_object_get_data (G_OBJECT (focus), IGE_MAC_KEY_HANDLER)) {
 	    if (nsevent_handle_menu_key (nsevent))
 		return GDK_FILTER_REMOVE;
@@ -866,7 +866,7 @@ setup_menu_event_handler (void) {
 	return;
     gdk_window_add_filter (NULL, global_event_filter_func, NULL);
     menu_event_handler_upp = NewEventHandlerUPP (menu_event_handler_func);
-    err = InstallEventHandler (GetApplicationEventTarget (), 
+    err = InstallEventHandler (GetApplicationEventTarget (),
 			       menu_event_handler_upp,
 			       GetEventTypeCount (menu_events), menu_events, 0,
 			       &menu_event_handler_ref);
@@ -892,7 +892,7 @@ sync_menu_shell (GtkMenuShell *menu_shell, MenuRef carbon_menu,
     OSStatus err;
 
     if (debug)
-	g_printerr ("%s: syncing shell %s (%p)\n", G_STRFUNC, 
+	g_printerr ("%s: syncing shell %s (%p)\n", G_STRFUNC,
 		    get_menu_label_text(GTK_WIDGET(menu_shell), NULL),
 		    menu_shell);
     carbon_menu_connect (GTK_WIDGET (menu_shell), carbon_menu, toplevel);
@@ -906,7 +906,7 @@ sync_menu_shell (GtkMenuShell *menu_shell, MenuRef carbon_menu,
 	if (GTK_IS_TEAROFF_MENU_ITEM (menu_item))
 	    continue;
 	if (toplevel && (g_object_get_data (G_OBJECT (menu_item),
-					    "gtk-empty-menu-item") 
+					    "gtk-empty-menu-item")
 			 || GTK_IS_SEPARATOR_MENU_ITEM (menu_item)))
 	    continue;
 	carbon_item = carbon_menu_item_get (menu_item);
@@ -921,12 +921,12 @@ sync_menu_shell (GtkMenuShell *menu_shell, MenuRef carbon_menu,
 		if (debug)
 		    g_printerr("%s: %s incrementing index\n", G_STRFUNC, label);
 		++carbon_item->index;
-	    } 
+	    }
 	    else if (carbon_item->index == carbon_index + 1) {
 		if (debug)
 		    g_printerr("%s: %s decrementing index\n", G_STRFUNC, label);
 		--carbon_item->index;
-	    } 
+	    }
 	    else {
 		if (debug)
 		    g_printerr ("%s: %s -> not matching, deleting\n",
@@ -938,7 +938,7 @@ sync_menu_shell (GtkMenuShell *menu_shell, MenuRef carbon_menu,
 	if (!carbon_item)
 	    carbon_item = carbon_menu_item_create(menu_item, carbon_menu,
 						  carbon_index, debug);
-	if (!carbon_item) //Bad carbon item, give up
+	if (!carbon_item) /*Bad carbon item, give up*/
 	    continue;
 	if (GTK_IS_CHECK_MENU_ITEM (menu_item))
 	    carbon_menu_item_update_active (carbon_item, menu_item);
@@ -959,15 +959,15 @@ sync_menu_shell (GtkMenuShell *menu_shell, MenuRef carbon_menu,
 	    if ((attrs & kMenuAttrHidden) == 0) {
 		if (debug)
 		    g_printerr("Hiding menu %s\n", label);
-		err = ChangeMenuAttributes (carbon_item->submenu, 
+		err = ChangeMenuAttributes (carbon_item->submenu,
 					    kMenuAttrHidden, 0);
 		carbon_menu_warn_label(err, label, "Failed to set visible");
 	    }
 	}
 	else if ((attrs & kMenuAttrHidden) != 0) {
-	    if (debug) 
+	    if (debug)
 		g_printerr("Revealing menu %s\n", label);
-	    err = ChangeMenuAttributes (carbon_item->submenu, 0, 
+	    err = ChangeMenuAttributes (carbon_item->submenu, 0,
 					    kMenuAttrHidden);
 	    carbon_menu_warn_label(err, label, "Failed to set Hidden");
 	}
@@ -987,7 +987,7 @@ parent_set_emission_hook (GSignalInvocationHint *ihint, guint n_param_values,
     GtkWidget *previous_parent  = NULL;
     GtkWidget *menu_shell = NULL;
 
-    if (!GTK_IS_MENU_ITEM (instance)) 
+    if (!GTK_IS_MENU_ITEM (instance))
 	return TRUE;
     previous_parent = g_value_get_object (param_values + 1);
     if (GTK_IS_MENU_SHELL (previous_parent)) {
@@ -996,11 +996,11 @@ parent_set_emission_hook (GSignalInvocationHint *ihint, guint n_param_values,
     else if (GTK_IS_MENU_SHELL (gtk_widget_get_parent(instance))) {
 	menu_shell = gtk_widget_get_parent(instance);
     }
-    if (!menu_shell) 
+    if (!menu_shell)
 	return TRUE;
     carbon_menu = carbon_menu_get (menu_shell);
 
-    if (!carbon_menu) 
+    if (!carbon_menu)
 	return TRUE;
 #if DEBUG
     g_printerr ("%s: item %s (%s) %s %s (%p)\n", G_STRFUNC,
@@ -1087,7 +1087,7 @@ ige_mac_menu_set_menu_bar (GtkMenuShell *menu_shell) {
     sync_menu_shell (menu_shell, carbon_menubar, TRUE, DEBUG_SET);
     if (parent)
 	g_signal_connect (parent, "focus-in-event",
-			  G_CALLBACK(window_focus), 
+			  G_CALLBACK(window_focus),
 			  carbon_menu_get(GTK_WIDGET(menu_shell)));
 
 }
@@ -1104,12 +1104,12 @@ ige_mac_menu_set_quit_menu_item (GtkMenuItem *menu_item) {
 					&appmenu, &index);
     carbon_menu_err_return(err, "Failed to obtain Quit Menu");
     err = SetMenuItemCommandID (appmenu, index, 0);
-    carbon_menu_err_return(err, 
+    carbon_menu_err_return(err,
 			   "Failed to set Quit menu command id");
     err = SetMenuItemProperty (appmenu, index, IGE_QUARTZ_MENU_CREATOR,
-			       IGE_QUARTZ_ITEM_WIDGET, sizeof (menu_item), 
+			       IGE_QUARTZ_ITEM_WIDGET, sizeof (menu_item),
 			       &menu_item);
-    carbon_menu_err_return(err, 
+    carbon_menu_err_return(err,
 			   "Failed to associate Quit menu item");
     gtk_widget_hide (GTK_WIDGET (menu_item));
     return;
@@ -1122,9 +1122,9 @@ ige_mac_menu_connect_window_key_handler (GtkWindow *window) {
 	return;
     }
 
-    g_signal_connect (window, "key-press-event", 
+    g_signal_connect (window, "key-press-event",
 		      G_CALLBACK (key_press_event), NULL);
-    g_object_set_data (G_OBJECT (window), IGE_MAC_KEY_HANDLER, 
+    g_object_set_data (G_OBJECT (window), IGE_MAC_KEY_HANDLER,
 		       GINT_TO_POINTER (1));
 }
 
@@ -1164,7 +1164,7 @@ struct _IgeMacMenuGroup {
 };
 /* app_menu_groups is a list of IgeMacMenuGroups, itself a list of
  * menu_items. They're provided to insert separators into the app
- * menu, grouping the items. 
+ * menu, grouping the items.
 */
 static GList *app_menu_groups = NULL;
 
@@ -1207,7 +1207,7 @@ ige_mac_menu_add_app_menu_item (IgeMacMenuGroup *group, GtkMenuItem *menu_item,
 	 */
 	if (list_group->items && list->prev)
 	    index++;
-	if (group != list_group) 
+	if (group != list_group)
 	    continue;
 
 	/*  add a separator before adding the first item, but not
@@ -1223,7 +1223,7 @@ ige_mac_menu_add_app_menu_item (IgeMacMenuGroup *group, GtkMenuItem *menu_item,
 	    label = get_menu_label_text (GTK_WIDGET (menu_item), NULL);
 	cfstr = CFStringCreateWithCString (NULL, label,
 					   kCFStringEncodingUTF8);
-//Add a new menu item and associate it with the GtkMenuItem.
+/*Add a new menu item and associate it with the GtkMenuItem.*/
 	err = InsertMenuItemTextWithCFString (appmenu, cfstr, index, 0, 0);
 	carbon_menu_err_return(err, "Failed to add menu item");
 	err = SetMenuItemProperty (appmenu, index + 1,
@@ -1233,9 +1233,9 @@ ige_mac_menu_add_app_menu_item (IgeMacMenuGroup *group, GtkMenuItem *menu_item,
 	CFRelease (cfstr);
 	carbon_menu_err_return(err, "Failed to associate Gtk Widget");
 	gtk_widget_hide (GTK_WIDGET (menu_item));
-//Finally add the item to the group; this is really just for tracking the count.
+/*Finally add the item to the group; this is really just for tracking the count.*/
 	group->items = g_list_append (group->items, menu_item);
-//Bail out: The rest of the menu doesn't matter.
+/*Bail out: The rest of the menu does NOT matter.*/
 	return;
 
     }
@@ -1252,9 +1252,11 @@ ige_mac_menu_sync(GtkMenuShell *menu_shell) {
     g_return_if_fail(carbon_menu != NULL);
 #if DEBUG_SYNC
     g_printerr ("%s: syncing menubar\n", G_STRFUNC);
-#endif
+#endif /* DEBUG_SYNC */
     sync_menu_shell (menu_shell, carbon_menu->menu,
 		     carbon_menu->toplevel, DEBUG_SYNC);
 }
 
-#endif __x86_64__
+#endif /* __x86_64__ */
+
+/* EOF */

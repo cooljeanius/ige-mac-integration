@@ -1,9 +1,10 @@
 /* --- objc-mode --- */
-/* GTK+ Integration with platform-specific application-wide features 
+/* GNSMenuItem.h
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +23,7 @@
  */
 #import <Cocoa/Cocoa.h>
 #include <gtk/gtk.h>
-// #include "gtkapplication.h"
+/* #include "gtkapplication.h" */
 
 typedef struct {
   GClosure *closure;
@@ -37,30 +38,33 @@ typedef struct {
  *
  * Wrapper class around NSMenuItem providing an
  * action function which puts invocation of the provided GClosure onto
- * the gtk idle queue. 
+ * the gtk idle queue.
  */
 @interface GNSMenuItem : NSMenuItem
 {
 @public
-  //accel_closure is manipulated directly by
-  //cocoa_menu_item_update_accel_closure()
-  GClosure *accel_closure; 
+  /* accel_closure is manipulated directly by
+   * cocoa_menu_item_update_accel_closure()
+   */
+  GClosure *accel_closure;
 @private
-  /// action_closure is the closure invoked when the menu item is
-  /// activated (usually by clicking on it).
+  /* action_closure is the closure invoked when the menu item is
+   * activated (usually by clicking on it).
+   */
   ClosureData action;
-  // The hidden parameter was introduced in 10.5; for earlier OSX
-  // versions we need to emulate it.
+  /* The hidden parameter was introduced in 10.5; for earlier OSX
+   * versions we need to emulate it.
+   */
   BOOL notUsed;
 #if !(MAC_OS_X_VERSION_MIN_REQUIRED > MAC_OS_X_VERSION_10_4)
   BOOL hidden;
   uint index;
   NSMenu *inMenu;
-#endif
+#endif /* !10.4+ */
 
 }
 
-/** 
+/**
  * initWithTitle:
  * @title: The title (label) of the menu item.
  * @closure: A gclosure containing the callback and associated data to
@@ -94,3 +98,4 @@ typedef struct {
 
 @end
 
+/* EOF */

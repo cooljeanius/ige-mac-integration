@@ -1,7 +1,8 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* GNSMenuBar.c
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -52,7 +53,7 @@
 - (void) resync
 {
   cocoa_menu_item_add_submenu(GTK_MENU_SHELL(gtk_menubar), self, TRUE, FALSE);
-    if (help_menu && 
+    if (help_menu &&
 	[help_menu menu] == self &&
 	[self indexOfItem: (NSMenuItem*)help_menu] < [self numberOfItems] - 1) {
     [self removeItem: (NSMenuItem*)help_menu];
@@ -81,7 +82,7 @@
   return app_menu;
 }
 
-- (void) setWindowsMenu: (GNSMenuItem*) menu_item 
+- (void) setWindowsMenu: (GNSMenuItem*) menu_item
 {
   [window_menu release];
   window_menu = menu_item;
@@ -121,3 +122,5 @@
 
 }
 @end
+
+/* EOF */

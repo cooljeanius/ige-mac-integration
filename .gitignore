@@ -1,6 +1,8 @@
 autom4te*
 *.cache
 config.h
+confdefs.h
+conftest*
 *.status
 libtool
 stamp-h1
@@ -17,5 +19,8 @@ compile
 *.pyc
 *.so
 *.defs
-m4/l*.m4
 *.log
+*(Autosaved)*
+
+# cannot gitignore libtool m4 macros, because they are needed to be able to
+# parse aclocal.m4 successfully

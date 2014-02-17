@@ -1,8 +1,9 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* gtkosxapplication.h
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -60,20 +61,20 @@ struct _GtkOSXApplicationMenuGroup
 
 
 GType gtk_osxapplication_get_type (void);
-//GtkOSXApplication *gtk_osxapplication_get (void);
+/*GtkOSXApplication *gtk_osxapplication_get (void);*/
 
-//void gtk_osxapplication_init (GtkOSXApplication *self);
+/*void gtk_osxapplication_init (GtkOSXApplication *self);*/
 void gtk_osxapplication_ready (GtkOSXApplication *self);
 void gtk_osxapplication_cleanup (GtkOSXApplication *self);
 
 /*Accelerator functions*/
 
-void gtk_osxapplication_set_use_quartz_accelerators(GtkOSXApplication *self, 
+void gtk_osxapplication_set_use_quartz_accelerators(GtkOSXApplication *self,
 					 gboolean use_quartz_accelerators);
 gboolean gtk_osxapplication_use_quartz_accelerators(GtkOSXApplication *self);
 
 /*Menu functions*/
-void gtk_osxapplication_set_menu_bar (GtkOSXApplication *self, 
+void gtk_osxapplication_set_menu_bar (GtkOSXApplication *self,
 				      GtkMenuShell *menu_shell);
 void gtk_osxapplication_sync_menubar (GtkOSXApplication *self);
 
@@ -102,7 +103,7 @@ typedef enum {
 #define GTK_TYPE_OSX_APPLICATION_ATTENTION_TYPE	(gtk_type_osxapplication_attention_type_get_type())
 GType gtk_type_osxapplication_attention_type_get_type(void);
 
-void gtk_osxapplication_set_dock_menu(GtkOSXApplication *self, 
+void gtk_osxapplication_set_dock_menu(GtkOSXApplication *self,
 				   GtkMenuShell *menu_shell);
 void gtk_osxapplication_set_dock_icon_pixbuf(GtkOSXApplication *self,
 					  GdkPixbuf *pixbuf);
@@ -125,21 +126,26 @@ void gtk_osxapplication_cancel_attention_request(GtkOSXApplication *self, gint i
 
 /* Bundle Functions */
 /* ige-mac-bundle included a bunch of silly stuff for setting up the
- * environment. It's silly first because that's easier to do with a
+ * environment. It is silly first because that is easier to do with a
  * startup script, and even easier to do with an LCEnvironment
- * dictionary in the bundle's Info.plist. 
+ * dictionary in the bundle's Info.plist.
 
  * Gtk applications, at least when launched with a shell script, still
- * return a bundle identifier and it's executable path is correct and
+ * return a bundle identifier and its executable path is correct and
  * useful.  Ige-mac-bundle had a "is it an application bundle"
- * function, but NSBundle doesn't provide that; instead,
- * quartz_application_get_bundle_id will return NULL if it's not really a
- * bundle, there's no Info.plist, or if Info.plist doesn't have a
+ * function, but NSBundle does NOT provide that; instead,
+ * quartz_application_get_bundle_id will return NULL if it is not really a
+ * bundle, there is no Info.plist, or if Info.plist does NOT have a
  * CFBundleIdentifier key (So if you need to detect being in a bundle,
- * make sure that your bundle has that key!) 
+ * make sure that your bundle has that key!)
 
- * Richard Proctor pointed out that these functions don't really need to be class functions: the self parameter isn't used, and making them "free" functions will often save one from having to call g_object_new(GTK_TYPE_OSX_APPLICATION) just to get it. For backwards compatibility, there's a define for the old version, but it will go away in 1.0, so clean up your code now.
-*/
+ * Richard Proctor pointed out that these functions do NOT really need to be
+ * class functions: the self parameter is NOT used, and making them "free"
+ * functions will often save one from having to call
+ * g_object_new(GTK_TYPE_OSX_APPLICATION) just to get it. For backwards
+ * compatibility, there's a define for the old version, but it will go away in
+ * 1.0, so clean up your code now.
+ */
 gchar *quartz_application_get_bundle_path(void);
 gchar *quartz_application_get_resource_path(void);
 gchar *quartz_application_get_executable_path(void);
@@ -157,7 +163,7 @@ gchar *quartz_application_get_bundle_info(const gchar *key);
     quartz_application_get_bundle_id()
 #define gtk_osxapplication_get_bundle_info(x, y) \
     quartz_application_get_bundle_info(y)
-#endif
+#endif /* !GTK_DISABLE_DEPRECATED */
 G_END_DECLS
 
 #endif /* __GTK_OSX_APPLICATION_H__ */

@@ -1,3 +1,7 @@
+WARN_CFLAGS = -Wall -Wextra -pedantic -ansi -Wno-deprecated
+
+AM_CFLAGS = $(WARN_CFLAGS)
+
 AM_CPPFLAGS = -I$(top_srcdir) $(WARN_CFLAGS)
 
 lib_LTLIBRARIES = libigemacintegration.la

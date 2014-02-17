@@ -34,14 +34,14 @@
  *   like we have to use NSMenu for this unfortunately. However, it
  *   might be possible to implement a category or to use the "method
  *   swizzling" trick to override this somehow... look into that.
- * 
+ *
  *   or, triggering the carbon dock setup before sharedapp:
  *
  *     EventTypeSpec kFakeEventList[] = { { INT_MAX, INT_MAX } };
        EventRef event;
        ReceiveNextEvent (GetEventTypeCount (kFakeEventList),
                          kFakeEventList,
-                         kEventDurationNoWait, false, 
+                         kEventDurationNoWait, false,
                          &event);
  *
  * - Dragging items onto the dock icon?
@@ -64,36 +64,36 @@
  */
 
 /* Uncomment ONE of these to test menu-mangling: */
-//#define IGEMACINTEGRATION
+/*#define IGEMACINTEGRATION*/
 #define GTKOSXAPPLICATION
 /* These others are optional */
 #define BUILT_UI
-//#define QUARTZ_HANDLERS
+/*#define QUARTZ_HANDLERS*/
 
 /* IGEMACINTEGRATION uses Carbon, which isn't available for 64-bit builds. */
 #ifdef __x86_64__
-#undef IGEMACINTEGRATION
-#ifndef GTKOSXAPPLICATION
-#define GTKOSXAPPLICATION
-#endif
-#endif //__x86_64__
+# undef IGEMACINTEGRATION
+# ifndef GTKOSXAPPLICATION
+#  define GTKOSXAPPLICATION
+# endif /* !GTKOSXAPPLICATION */
+#endif /*__x86_64__*/
 
 #include <gtk/gtk.h>
 #include <stdio.h>
 #if GTK_CHECK_VERSION(2,90,7)
-#include <gdk/gdkkeysyms-compat.h>
+# include <gdk/gdkkeysyms-compat.h>
 #else
-#include <gdk/gdkkeysyms.h>
-#endif
+# include <gdk/gdkkeysyms.h>
+#endif /* GTK */
 
 #ifdef IGEMACINTEGRATION
-#include "ige-mac-menu.h"
-#include "ige-mac-dock.h"
-#include "ige-mac-bundle.h"
-#endif
+# include "ige-mac-menu.h"
+# include "ige-mac-dock.h"
+# include "ige-mac-bundle.h"
+#endif /* IGEMACINTEGRATION */
 #ifdef GTKOSXAPPLICATION
-#include "gtkosxapplication.h"
-#endif
+# include "gtkosxapplication.h"
+#endif /* GTKOSXAPPLICATION */
 #include <config.h>
 
 typedef struct {
@@ -187,7 +187,7 @@ new_window_cb(GtkAction* action, gpointer data)
   gchar *title;
   g_print("Create New Window\n");
   title = g_strdup_printf( "Test Integration Window %d", serial++);
-  create_window(title); 
+  create_window(title);
   g_free(title);
 
 }
@@ -203,11 +203,11 @@ front_cb (GtkAction *action, gpointer data) {
   g_return_if_fail(data != NULL);
 }
 
-static GtkActionEntry test_actions[] = 
+static GtkActionEntry test_actions[] =
   {
     /*{Name, stock_id, label, accelerator, tooltip, callback} */
     {"FileMenuAction", NULL, "_File", NULL, NULL, NULL},
-    {"OpenAction",  GTK_STOCK_OPEN, "_Open", NULL, NULL, 
+    {"OpenAction",  GTK_STOCK_OPEN, "_Open", NULL, NULL,
      G_CALLBACK(action_activate_cb)},
     {"QuitAction", GTK_STOCK_QUIT, "_Quit", NULL, NULL,
      G_CALLBACK(gtk_main_quit)},
@@ -225,15 +225,15 @@ static GtkActionEntry test_actions[] =
     {"HelpMenuAction", NULL, "_Help", NULL, NULL, NULL },
     {"AboutAction", GTK_STOCK_ABOUT, "_About", NULL, NULL,
      G_CALLBACK(action_activate_cb)},
-    {"HelpAction", GTK_STOCK_HELP, "_Help", NULL, NULL, 
+    {"HelpAction", GTK_STOCK_HELP, "_Help", NULL, NULL,
      G_CALLBACK(action_activate_cb)},
   };
 
 static void
 radio_item_changed_cb (GtkAction* action, GtkAction* current, MenuCBData *datum)
 {
-    g_print ("Radio group %s in window %s changed value: %s is now active.\n", 
-	     datum->label, gtk_window_get_title(GTK_WINDOW(datum->item)), 
+    g_print ("Radio group %s in window %s changed value: %s is now active.\n",
+	     datum->label, gtk_window_get_title(GTK_WINDOW(datum->item)),
 	     gtk_action_get_name(GTK_ACTION(current)));
 }
 
@@ -242,13 +242,13 @@ static GtkActionEntry view_menu[] =
     {"ViewMenuAction", NULL, "_View", NULL, NULL, NULL},
 };
 
-static GtkRadioActionEntry view_actions[] = 
+static GtkRadioActionEntry view_actions[] =
 {
 /* Name, StockID, Label, Accelerator, Tooltip, Value */
     {"HorizontalAction", NULL, "_Horizontal", NULL, NULL, 0},
     {"VerticalAction", NULL, "_Vertical", NULL, NULL, 0},
 };
-#else //not BUILT_UI
+#else /*not BUILT_UI*/
 #if !defined QUARTZ_HANDLERS && defined GTKOSXAPPLICATION
 
 /* This is needed as a callback to enable accelerators when not using
@@ -260,7 +260,7 @@ can_activate_cb(GtkWidget* widget, guint signal_id, gpointer data)
 {
   return gtk_widget_is_sensitive(widget);
 }
-#endif //!QUARTZ_HANDLERS
+#endif /*!QUARTZ_HANDLERS*/
 
 static GtkWidget *
 test_setup_menu (MenuItems *items, GtkAccelGroup *accel)
@@ -278,7 +278,7 @@ test_setup_menu (MenuItems *items, GtkAccelGroup *accel)
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), menu);
   item = gtk_image_menu_item_new_from_stock(GTK_STOCK_OPEN, NULL);
   items->open_item = item;
-/* We're being fancy with our connection here so that we don't have to
+/* We are being fancy with our connection here so that we do NOT have to
  * have a separate callback function for each menu item, since each
  * one is going to print out a message saying what item got
  * selected. A real-life menu item usually uses just
@@ -292,10 +292,10 @@ test_setup_menu (MenuItems *items, GtkAccelGroup *accel)
   items->quit_item = gtk_image_menu_item_new_from_stock(GTK_STOCK_QUIT, NULL);
   g_signal_connect (items->quit_item, "activate", G_CALLBACK (gtk_main_quit), NULL);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), items->quit_item);
-//Set accelerators
-  gtk_accel_map_add_entry("<test-integration>/File/Open", GDK_o, 
+/*Set accelerators*/
+  gtk_accel_map_add_entry("<test-integration>/File/Open", GDK_o,
 			  GDK_CONTROL_MASK);
-  gtk_accel_map_add_entry("<test-integration>/File/Quit", GDK_q, 
+  gtk_accel_map_add_entry("<test-integration>/File/Quit", GDK_q,
 			  GDK_CONTROL_MASK);
   items->edit_item = item = gtk_menu_item_new_with_label ("Edit");
 
@@ -316,8 +316,8 @@ test_setup_menu (MenuItems *items, GtkAccelGroup *accel)
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), item);
 
   items->preferences_item = gtk_menu_item_new_with_label ("Preferences");
-  g_signal_connect_data (items->preferences_item, "activate", 
-			 G_CALLBACK (menu_item_activate_cb), 
+  g_signal_connect_data (items->preferences_item, "activate",
+			 G_CALLBACK (menu_item_activate_cb),
 			 menu_cbdata_new ("preferences", items->window),
 			 (GClosureNotify) menu_cbdata_delete, 0);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), items->preferences_item);
@@ -329,15 +329,15 @@ test_setup_menu (MenuItems *items, GtkAccelGroup *accel)
   gtk_menu_item_set_submenu (GTK_MENU_ITEM (item), menu);
 
   items->about_item = gtk_menu_item_new_with_label ("About");
-  g_signal_connect_data (items->about_item, "activate", 
-			 G_CALLBACK (menu_item_activate_cb), 
+  g_signal_connect_data (items->about_item, "activate",
+			 G_CALLBACK (menu_item_activate_cb),
 			 menu_cbdata_new ("about", items->window),
 			 (GClosureNotify) menu_cbdata_delete, 0);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), items->about_item);
 
   return menubar;
 }
-#endif //not BUILT_UI
+#endif /*not BUILT_UI*/
 
 #ifdef IGEMACINTEGRATION
 static void
@@ -364,12 +364,12 @@ change_icon_cb (GtkWidget  *button,
 
   if (!pixbuf) {
       char filename[PATH_MAX];
-      snprintf (filename, sizeof(filename), "%s/%s", PREFIX, 
+      snprintf (filename, sizeof(filename), "%s/%s", PREFIX,
 		 "share/gtk-2.0/demo/gnome-foot.png");
       pixbuf = gdk_pixbuf_new_from_file (filename, NULL);
   }
 
-  if (changed) 
+  if (changed)
     ige_mac_dock_set_icon_from_pixbuf (dock, NULL);
   else
     ige_mac_dock_set_icon_from_pixbuf (dock, pixbuf);
@@ -421,7 +421,7 @@ change_icon_cb (GtkWidget  *button,
 
   changed = !changed;
 }
-#endif
+#endif /* IGEMACINTEGRATION || GTKOSXAPPLICATION */
 
 static void
 change_menu_cb (GtkWidget  *button,
@@ -466,8 +466,8 @@ view_menu_cb (GtkWidget *button, gpointer user_data)
 				 sizeof(view_menu)/sizeof(GtkActionEntry),
 				 NULL);
     gtk_action_group_add_radio_actions_full(
-	    view_action_group, view_actions, 
-	    sizeof(view_actions)/sizeof(GtkRadioActionEntry), 
+	    view_action_group, view_actions,
+	    sizeof(view_actions)/sizeof(GtkRadioActionEntry),
 	    0, G_CALLBACK(radio_item_changed_cb),
 	    menu_cbdata_new ("View", GTK_WINDOW(window)),
 	    (GDestroyNotify) menu_cbdata_delete );
@@ -502,8 +502,8 @@ view_menu_cb (GtkWidget *button, gpointer user_data)
     mergeid = 0;
   }
 #else
-  g_print("View Menu Toggle Button doesn't actually do anything in the hand-built menu build\n");
-#endif //BUILT_UI
+  g_print("View Menu Toggle Button does not actually do anything in the hand-built menu build\n");
+#endif /*BUILT_UI*/
 }
 
 #ifdef GTKOSXAPPLICATION
@@ -539,7 +539,7 @@ app_open_file_cb (GtkOSXApplication *app, gchar *path, gpointer user_data)
     return FALSE;
 }
 
-#endif //GTKOSXAPPLICATION
+#endif /*GTKOSXAPPLICATION*/
 #ifdef IGEMACINTEGRATION
 
 gboolean _ige_mac_menu_is_quit_menu_item_handled (void);
@@ -552,7 +552,7 @@ static GtkWidget *
 create_window(const gchar *title)
 {
   gpointer	dock = NULL;
-#endif
+#endif /* IGEMACINTEGRATION */
   GtkWidget	  *window;
   GtkWidget       *vbox;
   GtkWidget       *menubar;
@@ -566,15 +566,15 @@ create_window(const gchar *title)
   guint mergeid;
   GError *err = NULL;
   GtkAccelGroup *accel_group;
-#else //not BUILT_UI
+#else /*not BUILT_UI*/
   GtkAccelGroup *accel_group = gtk_accel_group_new();
-#endif //not BUILT_UI
+#endif /*not BUILT_UI*/
 #ifdef IGEMACINTEGRATION
   IgeMacMenuGroup *group;
-#endif //IGEMACINTEGRATION
+#endif /*IGEMACINTEGRATION*/
 #ifdef GTKOSXAPPLICATION
   GtkOSXApplication *theApp = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-#endif //GTKOSXAPPLICATION
+#endif /*GTKOSXAPPLICATION*/
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   if (title)
       gtk_window_set_title (GTK_WINDOW (window), title);
@@ -601,36 +601,36 @@ create_window(const gchar *title)
   items->window_menu = gtk_ui_manager_get_widget(mgr, "/menubar/Window");
   items->preferences_item = gtk_ui_manager_get_widget(mgr, "/menubar/Edit/Preferences");
   accel_group = gtk_ui_manager_get_accel_group(mgr);
-#else //not BUILT_UI
+#else /*not BUILT_UI*/
   menubar = test_setup_menu (items, accel_group);
   items->window_menu = NULL;
-#endif //not BUILT_UI
+#endif /*not BUILT_UI*/
   gtk_window_add_accel_group(GTK_WINDOW(window), accel_group);
-  gtk_box_pack_start (GTK_BOX (vbox), 
+  gtk_box_pack_start (GTK_BOX (vbox),
                       menubar,
                       FALSE, TRUE, 0);
-  
-  gtk_box_pack_start (GTK_BOX (vbox), 
-                      gtk_label_new ("Some window content here"), 
+
+  gtk_box_pack_start (GTK_BOX (vbox),
+                      gtk_label_new ("Some window content here"),
                       FALSE, FALSE, 12);
 
   bbox = gtk_hbutton_box_new ();
   gtk_button_box_set_layout (GTK_BUTTON_BOX (bbox), GTK_BUTTONBOX_CENTER);
   gtk_box_set_spacing (GTK_BOX (bbox), 12);
 
-  gtk_box_pack_start (GTK_BOX (vbox), 
+  gtk_box_pack_start (GTK_BOX (vbox),
                       bbox,
                       TRUE, TRUE, 0);
 
   button = gtk_button_new_with_mnemonic ("Bo_unce");
   g_signal_connect (button, "clicked", G_CALLBACK (bounce_cb), dock);
-  gtk_box_pack_start (GTK_BOX (bbox), 
+  gtk_box_pack_start (GTK_BOX (bbox),
                       button,
                       FALSE, FALSE, 0);
 
   button = gtk_button_new_with_label ("Change Icon");
   g_signal_connect (button, "clicked", G_CALLBACK (change_icon_cb), dock);
-  gtk_box_pack_start (GTK_BOX (bbox), 
+  gtk_box_pack_start (GTK_BOX (bbox),
                       button,
                       FALSE, FALSE, 0);
 
@@ -644,58 +644,58 @@ create_window(const gchar *title)
   gtk_box_pack_start(GTK_BOX (vbox), textentry, TRUE, TRUE, 2);
 #ifdef BUILT_UI
   g_signal_connect(button, "toggled", G_CALLBACK (view_menu_cb), (gpointer)mgr);
-#else //not BUILT_UI
+#else /*not BUILT_UI*/
   g_signal_connect(button, "toggled", G_CALLBACK (view_menu_cb), NULL);
-#endif //not BUILT_UI
+#endif /*not BUILT_UI*/
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), FALSE);
   gtk_box_pack_start (GTK_BOX (bbox),
-		      button,
-		      FALSE, FALSE, 0);
+					  button,
+					  FALSE, FALSE, 0);
 
   gtk_widget_show_all (window);
 #if defined IGE_MAC_MENU || defined GTKOSXAPPLICATION
   gtk_widget_hide (menubar);
-#ifdef GTKOSXAPPLICATION
+# ifdef GTKOSXAPPLICATION
 /* Not really necessary unless quartz accelerator handling is turned off. */
-#if !defined QUARTZ_HANDLERS && !defined BUILT_UI
-  g_signal_connect(menubar, "can-activate-accel", 
+#  if !defined QUARTZ_HANDLERS && !defined BUILT_UI
+  g_signal_connect(menubar, "can-activate-accel",
 		   G_CALLBACK(can_activate_cb), NULL);
-#endif // !defined QUARTZ_HANDLERS && !defined BUILT_UI
-#endif  //GTKOSXAPPLICATION
-#endif //defined IGE_MAC_MENU || defined GTKOSXAPPLICATION
+#  endif /* !defined QUARTZ_HANDLERS && !defined BUILT_UI*/
+# endif  /*GTKOSXAPPLICATION*/
+#endif /*defined IGE_MAC_MENU || defined GTKOSXAPPLICATION*/
 #ifdef IGEMACINTEGRATION
   ige_mac_menu_set_menu_bar (GTK_MENU_SHELL (menubar));
   ige_mac_menu_set_quit_menu_item (GTK_MENU_ITEM (items->quit_item));
   group = ige_mac_menu_add_app_menu_group ();
   ige_mac_menu_add_app_menu_item  (group,
-				   GTK_MENU_ITEM (items->about_item),
-				   "About");
+								   GTK_MENU_ITEM (items->about_item),
+								   "About");
   group = ige_mac_menu_add_app_menu_group ();
   ige_mac_menu_add_app_menu_item  (group,
-				   GTK_MENU_ITEM (items->preferences_item),
-				   "Preferences");
-#endif //IGEMACINTEGRATION
+								   GTK_MENU_ITEM (items->preferences_item),
+								   "Preferences");
+#endif /*IGEMACINTEGRATION*/
 #ifdef GTKOSXAPPLICATION
   GtkWidget *sep;
   gtk_osxapplication_set_menu_bar(theApp, GTK_MENU_SHELL(menubar));
   gtk_osxapplication_insert_app_menu_item  (theApp, items->about_item,
-					    0);
+											0);
   sep = gtk_separator_menu_item_new();
   g_object_ref(sep);
   gtk_osxapplication_insert_app_menu_item  (theApp, sep, 1);
   gtk_osxapplication_insert_app_menu_item  (theApp,
-					    items->preferences_item,
-					    2);
+											items->preferences_item,
+											2);
   sep = gtk_separator_menu_item_new();
   g_object_ref(sep);
   gtk_osxapplication_insert_app_menu_item  (theApp, sep, 3);
 
   gtk_osxapplication_set_help_menu(theApp, GTK_MENU_ITEM(items->help_menu));
   gtk_osxapplication_set_window_menu(theApp, GTK_MENU_ITEM(items->window_menu));
-#endif //GTKOSXAPPLICATION
+#endif /*GTKOSXAPPLICATION*/
   if (!menu_items_quark)
       menu_items_quark = g_quark_from_static_string("MenuItem");
-  g_object_set_qdata_full(G_OBJECT(window), menu_items_quark, 
+  g_object_set_qdata_full(G_OBJECT(window), menu_items_quark,
 			  items, (GDestroyNotify)menu_items_destroy);
   return window;
 }
@@ -706,19 +706,21 @@ main (int argc, char **argv)
   GtkWidget       *window1;
 #ifndef BUILT_UI
   GtkWidget *window2;
-#endif
+#endif /* !BUILT_UI */
 #ifdef IGEMACINTEGRATION
   IgeMacDock      *dock;
-#endif //IGEMACINTEGRATION
+#endif /*IGEMACINTEGRATION*/
 #ifdef GTKOSXAPPLICATION
   GtkOSXApplication *theApp;
-#endif //GTKOSXAPPLICATION
-    g_thread_init(NULL);
+#endif /*GTKOSXAPPLICATION*/
+#ifndef GTK_DISABLE_DEPRECATED
+    g_thread_init(NULL); /* deprecated */
+#endif /* !GTK_DISABLE_DEPRECATED */
     gdk_threads_init();
   gtk_init (&argc, &argv);
 #ifdef IGEMACINTEGRATION
   dock = ige_mac_dock_get_default ();
-  window1 = create_window(dock, "Test Integration Window 1"); 
+  window1 = create_window(dock, "Test Integration Window 1");
   dock = ige_mac_dock_new ();
   g_signal_connect (dock,
                     "clicked",
@@ -729,13 +731,13 @@ main (int argc, char **argv)
                     "quit-activate",
                     G_CALLBACK (gtk_main_quit),
                     window1);
-#endif //IGEMACINTEGRATION
+#endif /*IGEMACINTEGRATION*/
 #ifdef GTKOSXAPPLICATION
   theApp  = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
   window1 = create_window("Test Integration Window 1");
 #ifndef BUILT_UI
   window2 = create_window("Test Integration Window 2");
-#endif
+#endif /* !BUILT_UI */
   {
     gboolean falseval = FALSE;
     gboolean trueval = TRUE;
@@ -752,19 +754,21 @@ main (int argc, char **argv)
   }
 #ifndef QUARTZ_HANDLERS
   gtk_osxapplication_set_use_quartz_accelerators(theApp, FALSE);
-#endif //QUARTZ_HANDLERS
+#endif /*QUARTZ_HANDLERS*/
   gtk_osxapplication_ready(theApp);
   {
     const gchar *id = quartz_application_get_bundle_id();
     if (id != NULL) {
-      g_print ("TestIntegration Error! Bundle Has ID %s\n", id); 
+      g_print ("TestIntegration Error! Bundle Has ID %s\n", id);
     }
   }
-#endif //GTKOSXAPPLICATION
+#endif /*GTKOSXAPPLICATION*/
   gtk_accel_map_load("accel_map");
   gtk_main ();
 #ifdef GTKOSXAPPLICATION
   g_object_unref(theApp);
-#endif //GTKOSXAPPLICATION
+#endif /*GTKOSXAPPLICATION*/
   return 0;
 }
+
+/* EOF */

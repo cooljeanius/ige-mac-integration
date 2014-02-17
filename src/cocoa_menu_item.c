@@ -1,8 +1,9 @@
-/* GTK+ Integration with platform-specific application-wide features
+/* cocoa_menu_item.c
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -23,17 +24,17 @@
 #import <Cocoa/Cocoa.h>
 #include <gtk/gtk.h>
 #if GTK_CHECK_VERSION(2,90,7)
-#include <gdk/gdkkeysyms-compat.h>
+# include <gdk/gdkkeysyms-compat.h>
 #else
-#include <gdk/gdkkeysyms.h>
-#endif
+# include <gdk/gdkkeysyms.h>
+#endif /* GTK */
 
 #include "cocoa_menu_item.h"
 #include "cocoa_menu.h"
 #include "getlabel.h"
 #import "GNSMenuBar.h"
 
-//#define DEBUG(format, ...) g_printerr ("%s: " format, G_STRFUNC, ## __VA_ARGS__)
+/*#define DEBUG(format, ...) g_printerr ("%s: " format, G_STRFUNC, ## __VA_ARGS__)*/
 #define DEBUG(format, ...)
 
 /*
@@ -138,7 +139,7 @@ cocoa_menu_item_update_submenu (GNSMenuItem *cocoa_item,
 
   if (!submenu) {
     if ([cocoa_item hasSubmenu])
-    /*If the cocoa_item has a submenu but the menu_item doesn't,
+    /*If the cocoa_item has a submenu but the menu_item does NOT,
       lose the cocoa_item's submenu */
       [cocoa_item setSubmenu: nil];
     return;
@@ -146,36 +147,36 @@ cocoa_menu_item_update_submenu (GNSMenuItem *cocoa_item,
   GtkWidget* label = NULL;
   NSMenu* cocoa_submenu = cocoa_menu_get(submenu);
 
-  if (cocoa_submenu != nil)
-    if ([cocoa_item submenu] != cocoa_submenu)
-      //covers no submenu or wrong submenu on cocoa_item)
-      [cocoa_item setSubmenu:cocoa_submenu];
-    else ;
-  //Nothing required -- the submenus are already set up correctly
-  else if ([cocoa_item hasSubmenu]) {
-    cocoa_submenu = [cocoa_item submenu];
-    cocoa_menu_connect (submenu, cocoa_submenu);
-  }
-  else { //no submenu anywhere, so create one
-    const gchar *label_text = get_menu_label_text (widget, &label);
-    if (label_text)
-      cocoa_submenu = [ [ NSMenu alloc ] initWithTitle:
-			[[ NSString alloc] initWithUTF8String:label_text]];
-    else
-      cocoa_submenu = [ [ NSMenu alloc ] initWithTitle:@""];
+	if (cocoa_submenu != nil) {
+	  if ([cocoa_item submenu] != cocoa_submenu) {
+		  /* covers no submenu or wrong submenu on cocoa_item) */
+		  [cocoa_item setSubmenu:cocoa_submenu];
+	  }
+  /* Nothing required -- the submenus are already set up correctly */
+	} else if ([cocoa_item hasSubmenu]) {
+		cocoa_submenu = [cocoa_item submenu];
+		cocoa_menu_connect (submenu, cocoa_submenu);
+	} else { /* no submenu anywhere, so create one */
+		const gchar *label_text = get_menu_label_text (widget, &label);
+		if (label_text) {
+			cocoa_submenu = [ [ NSMenu alloc ] initWithTitle:
+							 [[ NSString alloc] initWithUTF8String:label_text]];
+		} else {
+			cocoa_submenu = [ [ NSMenu alloc ] initWithTitle:@""];
+		}
 
     [cocoa_submenu setAutoenablesItems:NO];
     cocoa_menu_connect (submenu, cocoa_submenu);
 
     /* connect the new nsmenu to the passed-in item (which lives in
-       the parent nsmenu)
-       (Note: this will release any pre-existing version of this submenu)
-    */
+     * the parent nsmenu)
+     * (Note: this will release any pre-existing version of this submenu)
+     */
     [ cocoa_item setSubmenu:cocoa_submenu];
   }
   /* and push the GTK menu into the submenu */
   cocoa_menu_item_add_submenu (GTK_MENU_SHELL (submenu), cocoa_submenu,
-			       FALSE, FALSE);
+							   FALSE, FALSE);
 }
 
 static void
@@ -203,13 +204,13 @@ cocoa_menu_item_update_accelerator (GNSMenuItem *cocoa_item,
   g_return_if_fail (cocoa_item != NULL);
   g_return_if_fail (widget != NULL);
 
-  /* Important note: this function doesn't do anything to actually
+  /* Important note: this function does NOT do anything to actually
    * change key handling. Its goal is to get Cocoa to display the
    * correct accelerator as part of a menu item. Actual accelerator
    * handling depends on gtk_osxapplication_use_quartz_accelerators,
    * so this is more cosmetic than it may appear.
   */
-  /* Return if there's no label; it's probably a separator which isn't
+  /* Return if there is no label; it is probably a separator which is NOT
    * going to get an accelerator anyway. */
   get_menu_label_text (widget, &label);
   if (label == NULL) return;
@@ -221,8 +222,8 @@ cocoa_menu_item_update_accelerator (GNSMenuItem *cocoa_item,
       GtkAccelKey *key;
 
       key = gtk_accel_group_find (gtk_accel_group_from_accel_closure(closure),
-				  accel_find_func,
-				  closure);
+								  accel_find_func,
+								  closure);
 
       if (key            &&
 	  key->accel_key &&
@@ -241,9 +242,9 @@ cocoa_menu_item_update_accelerator (GNSMenuItem *cocoa_item,
 	    modifiers |= NSNumericPadKeyMask;
 	  }
 
-	  /* if we somehow got here with GDK_A ... GDK_Z rather than GDK_a ... GDK_z, then take note
-	     of that and make sure we use a shift modifier.
-	  */
+	  /* if we somehow got here with GDK_A ... GDK_Z rather than GDK_a ... GDK_z,
+	   * then take note of that and make sure we use a shift modifier.
+	   */
 
 	  if (keyval_is_uppercase (actual_key)) {
 	    modifiers |= NSShiftKeyMask;
@@ -267,21 +268,21 @@ cocoa_menu_item_update_accelerator (GNSMenuItem *cocoa_item,
 	  if (key->accel_mods || modifiers)
 	    {
 	      if (key->accel_mods & GDK_SHIFT_MASK) {
-		modifiers |= NSShiftKeyMask;
+			  modifiers |= NSShiftKeyMask;
 	      }
 
 	      if (key->accel_mods & GDK_CONTROL_MASK) {
-		modifiers |= NSControlKeyMask;
+			  modifiers |= NSControlKeyMask;
 	      }
 
 	      /* gdk/quartz maps Alt/Option to Mod5 */
 	      if (key->accel_mods & (GDK_MOD5_MASK)) {
-		modifiers |= NSAlternateKeyMask;
+			  modifiers |= NSAlternateKeyMask;
 	      }
 
 	      /* gdk/quartz maps Command to MOD1 */
 	      if (key->accel_mods & GDK_META_MASK) {
-		modifiers |= NSCommandKeyMask;
+			  modifiers |= NSCommandKeyMask;
 	      }
 
 	    }
@@ -297,25 +298,27 @@ cocoa_menu_item_update_accelerator (GNSMenuItem *cocoa_item,
 
 static void
 cocoa_menu_item_accel_changed (GtkAccelGroup   *accel_group,
-			       guint            keyval,
-			       GdkModifierType  modifier,
-			       GClosure        *accel_closure,
-			       GtkWidget       *widget)
+							   guint            keyval,
+							   GdkModifierType  modifier,
+							   GClosure        *accel_closure,
+							   GtkWidget       *widget)
 {
   GNSMenuItem *cocoa_item = cocoa_menu_item_get (widget);
   GtkWidget      *label;
 
   get_menu_label_text (widget, &label);
-  if (gtk_accel_group_from_accel_closure(accel_closure) != accel_group)
-      return;
+	if (gtk_accel_group_from_accel_closure(accel_closure) != accel_group) {
+		return;
+	}
   if (GTK_IS_ACCEL_LABEL (label) &&
-      _gtk_accel_label_get_closure((GtkAccelLabel *) label) == accel_closure)
-    cocoa_menu_item_update_accelerator (cocoa_item, widget);
+      _gtk_accel_label_get_closure((GtkAccelLabel *) label) == accel_closure) {
+	  cocoa_menu_item_update_accelerator (cocoa_item, widget);
+  }
 }
 
 static void
 cocoa_menu_item_update_accel_closure (GNSMenuItem *cocoa_item,
-				      GtkWidget      *widget)
+									  GtkWidget      *widget)
 {
   GtkAccelGroup *group;
   GtkWidget     *label;
@@ -354,8 +357,8 @@ cocoa_menu_item_update_accel_closure (GNSMenuItem *cocoa_item,
 
 static void
 cocoa_menu_item_notify_label (GObject    *object,
-			      GParamSpec *pspec,
-			      gpointer    data)
+							  GParamSpec *pspec,
+							  gpointer    data)
 {
   GNSMenuItem *cocoa_item = cocoa_menu_item_get (GTK_WIDGET (object));
 
@@ -373,8 +376,8 @@ cocoa_menu_item_notify_label (GObject    *object,
 
 static void
 cocoa_menu_item_notify (GObject        *object,
-			GParamSpec     *pspec,
-			GNSMenuItem *cocoa_item)
+						GParamSpec     *pspec,
+						GNSMenuItem *cocoa_item)
 {
   if (!strcmp (pspec->name, "sensitive") ||
       !strcmp (pspec->name, "visible"))
@@ -394,8 +397,8 @@ cocoa_menu_item_notify (GObject        *object,
 
 static void
 cocoa_menu_item_connect (GtkWidget*   menu_item,
-			 GNSMenuItem* cocoa_item,
-			 GtkWidget     *label)
+						 GNSMenuItem* cocoa_item,
+						 GtkWidget     *label)
 {
   GNSMenuItem* old_item = cocoa_menu_item_get (menu_item);
 
@@ -509,9 +512,9 @@ cocoa_menu_item_add_item (NSMenu* cocoa_menu, GtkWidget* menu_item, int index)
 
 void
 cocoa_menu_item_add_submenu (GtkMenuShell *menu_shell,
-			   NSMenu*       cocoa_menu,
-			   gboolean      toplevel,
-			   gboolean      debug)
+							 NSMenu*       cocoa_menu,
+							 gboolean      toplevel,
+							 gboolean      debug)
 {
   GList         *children;
   GList         *l;
@@ -529,7 +532,7 @@ cocoa_menu_item_add_submenu (GtkMenuShell *menu_shell,
     if ([[cocoa_menu itemAtIndex: index] respondsToSelector: @selector(mark)])
       [(GNSMenuItem*)[cocoa_menu itemAtIndex: index] mark];
   }
-  index = toplevel ? 1 : 0; //Skip the 0th menu item on the menu bar
+  index = toplevel ? 1 : 0; /* Skip the 0th menu item on the menu bar */
   /* Now iterate over the menu shell and check it against the cocoa menu */
   children = gtk_container_get_children (GTK_CONTAINER (menu_shell));
   for (l = children; l; l = l->next) {
@@ -548,8 +551,8 @@ cocoa_menu_item_add_submenu (GtkMenuShell *menu_shell,
       continue;
     }
     if (cocoa_item && (loc = [cocoa_menu indexOfItem: cocoa_item]) > -1) {
-      /*It's in there, just in the wrong place. Put it where it goes
-	and update it*/
+      /*It is in there, just in the wrong place. Put it where it goes
+	   * and update it*/
       [cocoa_item retain];
       [cocoa_menu removeItem: cocoa_item];
       [cocoa_menu insertItem: cocoa_item atIndex: index++];
@@ -560,11 +563,11 @@ cocoa_menu_item_add_submenu (GtkMenuShell *menu_shell,
       continue;
     }
     if (GTK_IS_SEPARATOR_MENU_ITEM (menu_item) && GTK_IS_MENU_BAR(menu_shell))
-      /* Don't want separators on the menubar */
+      /* Do NOT want separators on the menubar */
       continue;
 
     if (GTK_IS_TEAROFF_MENU_ITEM (menu_item))
-      /*Don't want tearoff items at all */
+      /*Do NOT want tearoff items at all */
       continue;
 
     if (g_object_get_data (G_OBJECT (menu_item), "gtk-empty-menu-item"))
@@ -573,7 +576,7 @@ cocoa_menu_item_add_submenu (GtkMenuShell *menu_shell,
     /*OK, this must be a new one. Add it. */
     cocoa_menu_item_add_item (cocoa_menu, menu_item, index++);
   }
-  /* Iterate over the cocoa menu again removing anything that's still marked */
+  /* Iterate over the cocoa menu again removing anything that is still marked */
   for (index = 0; index < [cocoa_menu numberOfItems]; index++) {
     GNSMenuItem *item = (GNSMenuItem*)[cocoa_menu itemAtIndex: index];
     if (([item respondsToSelector: @selector(isMarked)]) && [item isMarked])
@@ -1011,7 +1014,7 @@ gdk_quartz_keyval_to_string (guint keyval)
     break;
   }
   return NULL;
-};
+}/*;*/
 static gboolean
 keyval_is_uppercase (guint keyval)
 {
@@ -1048,3 +1051,5 @@ keyval_is_uppercase (guint keyval)
   }
   return FALSE;
 }
+
+/* EOF */

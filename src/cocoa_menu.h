@@ -1,8 +1,9 @@
-/* GTK+ Integration with platform-specific application-wide features
+/* cocoa_menu.h
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -29,4 +30,6 @@
 NSMenu *cocoa_menu_get(GtkWidget *widget);
 void cocoa_menu_connect(GtkWidget *menu, NSMenu *cocoa_menu);
 
-#endif //__COCOA_MENU_H__
+#endif /* __COCOA_MENU_H__ */
+
+/* EOF */

@@ -1,6 +1,7 @@
-/* GTKOSXApplication Class
+/* gtkosxapplication.c
+ * GTKOSXApplication Class
  *
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * An application class which mirrors the Cocoa NSApplication to
  * receive signals from the GtkApplicationDelegate class in
@@ -25,7 +26,7 @@
 #include "gtkosxapplication.h"
 #include "gtkosxapplicationprivate.h"
 
-//#define DEBUG(format, ...) g_printerr ("%s: " format, G_STRFUNC, ## __VA_ARGS__)
+/*#define DEBUG(format, ...) g_printerr ("%s: " format, G_STRFUNC, ## __VA_ARGS__)*/
 #define DEBUG(format, ...)
 /**
  * SECTION:gtkosxapplication
@@ -40,32 +41,32 @@
  *
  * Using GtkOSXApplication is pretty simple.
  * First, create an instance at startup:
- * 
+ *
  * |[GtkOSXApplication *theApp = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);]|
- * 
+ *
  * Do this early in your program, shortly after you run
- * |[gtk_init()]|. Don't forget to guard it, and all other calls into
- * the library, with |[#ifdef MAC_INTEGRATION]|. You don't want your
+ * |[gtk_init()]|. Do NOT forget to guard it, and all other calls into
+ * the library, with |[#ifdef MAC_INTEGRATION]|. You do NOT want your
  * Linux users' builds failing because of this.  The application
  * object is a singleton, so you can call g_object_new as often as you
- * like. You'll always get the same pointer back. There's no need to
+ * like. You will always get the same pointer back. There is no need to
  * pass it around as an argument. Do note that all of the
  * GtkOSXApplication functions take theApp as an argument, even if
- * they don't use it. This seems silly in C, and perhaps it is, but
- * it's needed to make the Python binding logic recognize that they're
+ * they do NOT use it. This seems silly in C, and perhaps it is, but
+ * it is needed to make the Python binding logic recognize that they are
  * class methods.
  *
  * Just having the application object created will get you some
  * benefits, like having the Quit menu item in the dock menu work. But
- * you'll obviously want more. So the next place to visit is your main
+ * you will obviously want more. So the next place to visit is your main
  * window code. If you have a simple application, you might be
- * constructing the menu by hand, but you're more likely to be using
+ * constructing the menu by hand, but you are more likely to be using
  * GtkBuilder. In either case, you need to get a pointer to the
- * menubar. If you're building by hand, you've already got it lying
+ * menubar. If you are building by hand, you have already got it lying
  * around because you needed it to add the menus to. With GtkBuilder,
  * you need to ask the GtkUIManager for a pointer. Once everything is
  * more-or-less set up on the Gtk+ side, you need only hide the menu
- * and call gtk_osxapplication_set_main_menu(). Here's an example with
+ * and call gtk_osxapplication_set_main_menu(). Here is an example with
  * GtkBuilder:
  *
  * <example>
@@ -99,7 +100,7 @@
  * </para></listitem>
  * </itemizedlist>
  * If you need to use Gtk+ keyboard accelerator handling <emphasis>and</emphasis>
- * you're using GtkMenuItems instead of GtkActions, you'll need to
+ * you are using GtkMenuItems instead of GtkActions, you will need to
  * connect a special handler as shown in the following example:
  * <example>
  * <title>Enabling Accelerators on Hidden Menus</title>
@@ -110,14 +111,14 @@
  *   return gtk_widget_is_sensitive(widget);
  * }
  * ...
- *   g_signal_connect(menubar, "can-activate-accel", 
+ *   g_signal_connect(menubar, "can-activate-accel",
  *                    G_CALLBACK(can_activate_cb), NULL);
  * </programlisting>
  * </example>
  *
  * The next task to make your application appear more normal for Mac
  * users is to move some menu items from their normal Gtk locations to
- * the so-called "App" menu. That's the menu all the way at the left
+ * the so-called "App" menu. That is the menu all the way at the left
  * of the menubar that has the currently-running application's
  * name. There are 3 menu items that normally go there:
  * <itemizedlist>
@@ -127,12 +128,12 @@
  * </itemizedlist>
  * File|Quit is a special case, because OSX handles it itself and
  * automatically includes it, so the only thing you need do is hide it
- * on the File menu so that it doesn't show up twice:
+ * on the File menu so that it does NOT show up twice:
  * |[gtk_widget_hide(GTK_WIDGET(file_quit_menu_item));]|
  * The other two must be moved in code, and there are two functions
  * for doing that. The first one creates "goups", which is just an
  * easy way to manage separators, and the second adds the actual menu
- * items to the groups. Here's an example:
+ * items to the groups. Here is an example:
  * <example>
  * <programlisting>
  *  GtkOSXApplicationMenuGroup *group;
@@ -149,9 +150,9 @@
  *                                         GTK_MENU_ITEM (preferences_item));
  * </programlisting>
  * </example>
- * Once we have everything set up for as many windows as we're going
+ * Once we have everything set up for as many windows as we are going
  * to open before we call gtk_main_loop(), we need to tell OSX that
- * we're ready:
+ * we are ready:
  * |[gtk_osxapplication_ready(theApp);]|
  *
  * If you add other windows later, you must do everything above for
@@ -161,8 +162,8 @@
  * and change the menu (perhaps because of a context change within a
  * window, as with changing pages in a GtkNotebook) you need to call
  * |[gtk_osxapplication_sync_menubar(theApp)]|
- * 
- * 
+ *
+ *
  * * The dock is that bar of icons that normally lives at the bottom of
  * the display on a Mac (though it can be moved to one of the other
  * sides; this author likes his on the left, which is where it was
@@ -174,12 +175,12 @@
  * menu and for changing the icon that is displayed for the the
  * application. GtkOSXApplication also provides an interface to
  * AttentionRequest, which bounces the dock tile if the application
- * doesn't have focus. You might want to do that at the end of a long
- * task so that the user will know that it's finished if she's
+ * does NOT have focus. You might want to do that at the end of a long
+ * task so that the user will know that it has finished if she has
  * switched to another application while she waits for yours.
- * They're all pretty simple, so you can just read the details below.
- * 
- * 
+ * They are all pretty simple, so you can just read the details below.
+ *
+ *
  * * The last feature to which GtkOSXApplication provides an interface
  * is the bundle. Normally in OSX, graphical applications are packaged
  * along with their non-standard dependencies and their resources
@@ -198,44 +199,44 @@
  * </itemizedlist>
  *
  * The first three just get a UTF8-encoded path. An interesting note
- * is that they'll return the path to the executable or the folder
- * it's in regardless of whether it's actually in a bundle. To find
+ * is that they will return the path to the executable or the folder
+ * it is in regardless of whether it is actually in a bundle. To find
  * out if one is actually dealing with a bundle,
- * gtk_osxapplication_get_bundle_id() will return "" if it can't find
+ * gtk_osxapplication_get_bundle_id() will return "" if it cannot find
  * the key %CFBundleIdentifier from the bundle's Info.plist -- which it
- * won't if the application isn't in a bundle or wasn't launched by
+ * will NOT if the application is NOT in a bundle or was NOT launched by
  * opening the bundle. (In other words, even if you have your
  * application installed in Foo.app, if you launch it from the command
  * line as
  *|[$ Foo.app/Contents/MacOS/Foo]|
- * the Info.plist won't have been opened and
+ * the Info.plist will NOT have been opened and
  * gtk_osxapplication_get_bundle_id() will return "". Of course, it
- * will also return "" if you didn't set %CFBundleIdentifier in the
+ * will also return "" if you did NOT set %CFBundleIdentifier in the
  * Info.plist, so make sure that you do!
  *
  * The last function, gtk_osxapplication_get_bundle_info(), will
  * return the value associated with an arbitrary key from Info.plist
- * as long as that value is a string. If it isn't, then the function
+ * as long as that value is a string. If it is NOT, then the function
  * returns a null string ("").
- * 
+ *
  * Finally, notice the signals. These are emitted in response to the
  * indicated OSX notifications. Except for
  * #GtkOSXApplication::NSApplicationBlockTermination, most programs
- * won't need to do anything with
+ * will NOT need to do anything with
  * them. #GtkOSXApplication::NSApplicationBlockTermination is telling
  * you that OSX is planning to shut down your program. If you have any
  * cleanup to do (like saving open files), or if you want to ask the
- * user if it's OK, you should connect to the signal and do your
+ * user if it is OK, you should connect to the signal and do your
  * cleanup. Your handler can return %TRUE to prevent the application
  * from quitting.
  */
 
 
-/** 
+/**
  * gtk_osxapplication_use_quartz_accelerators:
  * @self: The GtkOSXApplication pointer.
  *
- * Are we using Quartz or Gtk+ accelerator handling? 
+ * Are we using Quartz or Gtk+ accelerator handling?
  *
  * Returns: a gboolean
  */
@@ -245,10 +246,10 @@ gtk_osxapplication_use_quartz_accelerators(GtkOSXApplication *self)
     return self->priv->use_quartz_accelerators;
 }
 
-/** 
+/**
  * gtk_osxapplication_set_use_quartz_accelerators:
  * @self: The GtkOSXApplication pointer.
- * @use_quartz_accelerators: Gboolean 
+ * @use_quartz_accelerators: Gboolean
  *
  * Set quartz accelerator handling; TRUE (default) uses quartz; FALSE
  * uses Gtk+. Quartz accelerator handling is required for normal OSX
@@ -270,6 +271,8 @@ gtk_osxapplication_set_use_quartz_accelerators(GtkOSXApplication *self,
 GType
 gtk_type_osxapplication_attention_type_get_type(void)
 {
-  //Bogus GType, but there's no good reason to register this; it's only an enum
+  /*Bogus GType, but there is no good reason to register this; it is only an enum */
   return 0;
 }
+
+/* EOF */

@@ -1,9 +1,10 @@
 /* --- objc-mode --- */
-/* GTK+ Integration with platform-specific application-wide features 
+/* GNSMenuItem.c
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
- * Copyright © 2010 John Ralls
+ * Copyright (C) 2010 John Ralls
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,12 +27,12 @@
 static gboolean
 idle_call_activate (ClosureData *action)
 {
-//    g_value_init(&args, GTK_TYPE_MENU_ITEM);
+/*    g_value_init(&args, GTK_TYPE_MENU_ITEM); */
   GValue arg = {0};
   g_value_init(&arg, G_TYPE_POINTER);
   g_value_set_pointer(&arg, action->data);
   g_closure_invoke(action->closure, NULL, 1, &arg, 0);
-//  gtk_menu_item_activate ((GtkMenuItem*) data);
+/*  gtk_menu_item_activate ((GtkMenuItem*) data); */
   return FALSE;
 }
 
@@ -69,9 +70,9 @@ idle_call_activate (ClosureData *action)
   return [super isHidden];
 #else
   return hidden;
-#endif
+#endif /* !10.4+ */
 }
-  
+
 - (void) setHidden: (BOOL) shouldHide
 {
 #if MAC_OS_X_VERSION_MIN_REQUIRED > MAC_OS_X_VERSION_10_4
@@ -93,7 +94,7 @@ idle_call_activate (ClosureData *action)
     [(GNSMenuBar*)[NSApp mainMenu] resync];
   }
   [self release];
-#endif
+#endif /* !10.4+ */
 }
 
 - (void) mark
@@ -121,7 +122,9 @@ idle_call_activate (ClosureData *action)
 #else
     if (old_menu == [self menu])
       [[self menu] removeItem: self];
-#endif
+#endif /* !10.4+ */
 }
 
 @end
+
+/* EOF */
