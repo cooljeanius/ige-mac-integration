@@ -122,6 +122,7 @@ AC_DEFINE_UNQUOTED([PREFIX],["${prefix}"],[Installation prefix (for making filen
 # Checks for header files.
 AC_HEADER_STDBOOL dnl# also "_CHECK"s it
 AC_PATH_X
+AC_PATH_XTRA
 AC_CHECK_HEADERS([sys/param.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
