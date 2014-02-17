@@ -40,6 +40,8 @@ CLEANFILES =						\
 	igemacintegration.defs				\
 	igemacintegration.c
 
+DISTCLEANFILES = .DS_Store
+
 EXTRA_DIST =						\
 	igemacintegration.defs				\
 	igemacintegration.override

@@ -8,6 +8,8 @@ AM_CXXFLAGS = $(WARN_CXXFLAGS)
 
 AM_CPPFLAGS = -I$(top_srcdir) $(WARN_CFLAGS)
 
+DISTCLEANFILES = .DS_Store
+
 lib_LTLIBRARIES = libigemacintegration.la
 
 libigemacintegration_la_SOURCES =			\

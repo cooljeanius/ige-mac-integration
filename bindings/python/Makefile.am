@@ -7,3 +7,5 @@ if !SIXTY_FOUR_BIT
 endif
 endif
 SUBDIRS = $(GTK_DIR) $(IGE_DIR)
+
+DISTCLEANFILES = .DS_Store

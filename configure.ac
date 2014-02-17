@@ -9,7 +9,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_CANONICAL_TARGET dnl# also checks the "_BUILD" and "_HOST" versions
 AC_SEARCH_LIBS([strerror],[cposix]) dnl# used to be AC\_ISC\_POSIX
 AC_USE_SYSTEM_EXTENSIONS
-AM_INIT_AUTOMAKE([gnu])
+AM_INIT_AUTOMAKE([gnits])
 AM_MAINTAINER_MODE
 AM_SANITY_CHECK
 AC_CONFIG_HEADERS([config.h])

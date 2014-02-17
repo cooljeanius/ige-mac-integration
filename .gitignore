@@ -21,6 +21,8 @@ compile
 *.defs
 *.log
 *(Autosaved)*
+ige-mac-integration-*.*.*/*
+bindings/python/gtk_osxapplication/gen-gtk_osxapplication.c
 
 # cannot gitignore libtool m4 macros, because they are needed to be able to
 # parse aclocal.m4 successfully

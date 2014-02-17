@@ -37,6 +37,8 @@ CLEANFILES =						\
 	gtk_osxapplication.defs				\
 	gtk_osxapplication.c
 
+DISTCLEANFILES = .DS_Store
+
 EXTRA_DIST =						\
 	gtk_osxapplication.defs				\
 	gtk_osxapplication.override

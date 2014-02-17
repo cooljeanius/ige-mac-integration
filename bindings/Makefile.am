@@ -3,3 +3,5 @@ SUBDIRS=
 if ENABLE_PYTHON
 SUBDIRS += python
 endif
+
+DISTCLEANFILES = .DS_Store

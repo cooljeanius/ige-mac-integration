@@ -525,6 +525,7 @@ CLEANFILES = \
 	igemacintegration.defs				\
 	igemacintegration.c
 
+DISTCLEANFILES = .DS_Store
 EXTRA_DIST = \
 	igemacintegration.defs				\
 	igemacintegration.override
@@ -542,9 +543,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu bindings/python/igemacintegration/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnits bindings/python/igemacintegration/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu bindings/python/igemacintegration/Makefile
+	  $(AUTOMAKE) --gnits bindings/python/igemacintegration/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -816,6 +817,7 @@ clean-generic:
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
 	-test . = "$(srcdir)" || test -z "$(CONFIG_CLEAN_VPATH_FILES)" || rm -f $(CONFIG_CLEAN_VPATH_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
