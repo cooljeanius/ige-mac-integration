@@ -20,6 +20,7 @@ compile
 *.so
 *.defs
 *.log
+*DS_Store*
 *(Autosaved)*
 ige-mac-integration-*.*.*/*
 bindings/python/gtk_osxapplication/gen-gtk_osxapplication.c
