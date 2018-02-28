@@ -1,5 +1,5 @@
 /* --- objc-mode --- */
-/* GNSMenuItem.c
+/* GNSMenuItem.c -*- Objective-C -*-
  * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *

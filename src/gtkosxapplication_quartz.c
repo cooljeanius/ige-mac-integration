@@ -1,4 +1,4 @@
-/* gtkosxapplication_quartz.c
+/* gtkosxapplication_quartz.c -*- Objective-C -*-
  * GTK+ application-level integration for the Mac OS X/Cocoa
  *
  * Copyright (C) 2007 Pioneer Research Center USA, Inc.

@@ -1,4 +1,4 @@
-/* GtkApplicationDelegate.c (should actually be ".m")
+/* GtkApplicationDelegate.c (should actually be ".m") -*- Objective-C -*-
  * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *

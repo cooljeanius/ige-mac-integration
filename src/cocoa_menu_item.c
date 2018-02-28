@@ -1,4 +1,4 @@
-/* cocoa_menu_item.c
+/* cocoa_menu_item.c -*- Objective-C -*-
  * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *

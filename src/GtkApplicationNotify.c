@@ -1,4 +1,5 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* GtkApplicationNotify.c -*- Objective-C -*-
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
@@ -36,7 +37,7 @@
 
   [[NSNotificationCenter defaultCenter] addObserver:self
    selector:@selector(appDidBecomeInactive:)
-   name:NSApplicationWillResignActiveNotification 
+   name:NSApplicationWillResignActiveNotification
    object:NSApp];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
@@ -50,7 +51,7 @@
 - (void)appDidBecomeActive:(NSNotification *)notification
 {
   GtkOSXApplication *app = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-  guint sig = g_signal_lookup("NSApplicationDidBecomeActive", 
+  guint sig = g_signal_lookup("NSApplicationDidBecomeActive",
 			      GTK_TYPE_OSX_APPLICATION);
   if (sig)
       g_signal_emit(app, sig, 0);
@@ -60,7 +61,7 @@
 - (void)appDidBecomeInactive:(NSNotification *)notification
 {
   GtkOSXApplication *app = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
-  guint sig = g_signal_lookup("NSApplicationWillResignActive", 
+  guint sig = g_signal_lookup("NSApplicationWillResignActive",
 			      GTK_TYPE_OSX_APPLICATION);
   if (sig)
       g_signal_emit(app, sig, 0);
@@ -71,7 +72,7 @@
 {
   GtkOSXApplication *app = g_object_new(GTK_TYPE_OSX_APPLICATION, NULL);
   [[NSNotificationCenter defaultCenter] removeObserver: self];
-  guint sig = g_signal_lookup("NSApplicationWillTerminate", 
+  guint sig = g_signal_lookup("NSApplicationWillTerminate",
 			      GTK_TYPE_OSX_APPLICATION);
   if (sig)
       g_signal_emit(app, sig, 0);

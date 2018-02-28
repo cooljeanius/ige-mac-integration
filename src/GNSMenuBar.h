@@ -1,4 +1,5 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* GNSMenuBar.h -*- Objective-C -*-
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright © 2010 John Ralls
@@ -24,7 +25,7 @@
 
 @class GNSMenuItem;
 
-/** 
+/**
  * SECTION:GNSMenuBar
  * @short_description: Wrapper class for NSMenubar
  * #title: GNSMenuBar
@@ -44,11 +45,11 @@
   GNSMenuItem *help_menu;
 }
 
-/** 
+/**
  * initWithTitle:
  * @title: Title string with which to initialize the menubar. Normally @"".
  *
- * Override the designated initializer 
+ * Override the designated initializer
  */
 - (id) initWithTitle: (NSString*) title;
 
@@ -60,7 +61,7 @@
  */
 - (id) initWithGtkMenuBar: (GtkMenuBar*) menubar;
 
-/** 
+/**
  * addGroup:
  *
  * Create a new GtkApplicationMenuGroup, add it to the list, and

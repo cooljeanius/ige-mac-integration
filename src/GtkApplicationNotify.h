@@ -1,4 +1,5 @@
-/* GTK+ Integration with platform-specific application-wide features 
+/* GtkApplicationNotify.h -*- Objective-C -*-
+ * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *
  * Copyright (C) 2009 Paul Davis
@@ -23,5 +24,5 @@
 #import <Cocoa/Cocoa.h>
 
 @interface GtkApplicationNotificationObject : NSObject {}
-- (GtkApplicationNotificationObject*) init; 
+- (GtkApplicationNotificationObject*) init;
 @end

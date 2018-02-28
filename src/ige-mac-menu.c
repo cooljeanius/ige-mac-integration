@@ -1,4 +1,5 @@
-/* GTK+ Integration for the Mac OS X Menubar.
+/* ige-mac-menu.c -*- Objective-C -*-
+ * GTK+ Integration for the Mac OS X Menubar.
  *
  * Copyright (C) 2007 Pioneer Research Center USA, Inc.
  * Copyright (C) 2007, 2008 Imendio AB

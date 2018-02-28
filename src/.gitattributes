@@ -1,0 +1,8 @@
+ige-mac-menu.c diff=objc
+gtkosxapplication_quartz.c diff=objc
+GtkApplicationNotify.[ch] diff=objc
+GtkApplicationDelegate.[ch] diff=objc
+GNSMenuItem.[ch] diff=objc
+GNSMenuBar.[ch] diff=objc
+cocoa_menu.c diff=objc
+cocoa_menu_item.c diff=objc

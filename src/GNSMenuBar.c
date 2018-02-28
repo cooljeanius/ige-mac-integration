@@ -1,4 +1,4 @@
-/* GNSMenuBar.c
+/* GNSMenuBar.c -*- Objective-C -*-
  * GTK+ Integration with platform-specific application-wide features
  * such as the OS X menubar and application delegate concepts.
  *

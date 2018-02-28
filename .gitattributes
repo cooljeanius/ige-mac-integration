@@ -1,0 +1,12 @@
+ar-lib linguist-vendored
+config.guess linguist-vendored
+config.sub linguist-vendored
+depcomp linguist-vendored
+install-sh linguist-vendored
+ltmain.sh linguist-vendored
+missing linguist-vendored
+py-compile linguist-vendored
+aclocal.m4 linguist-vendored
+m4/libtool.m4 linguist-vendored
+m4/lt*.m4 linguist-vendored
+Makefile.in linguist-vendored
